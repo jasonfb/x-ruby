@@ -39,9 +39,11 @@ module X
     def parse(response:, array_class: nil, object_class: nil)
       raise error(response) unless response.is_a?(Net::HTTPSuccess)
 
-      return unless json?(response)
-
-      JSON.parse(response.body, array_class:, object_class:)
+      if json?(response)
+        JSON.parse(response.body, array_class:, object_class:)
+      else
+        response.body.split("&").map { |pair| pair.split("=") }.to_h
+      end
     end
 
     private
